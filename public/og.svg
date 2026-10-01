@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <radialGradient id="g" cx="50%" cy="0%" r="90%">
+      <stop offset="0%" stop-color="#1a1a22"/>
+      <stop offset="60%" stop-color="#0c0c0f"/>
+      <stop offset="100%" stop-color="#08080a"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#g)"/>
+  <g stroke="#c9a86a" stroke-opacity="0.35" fill="none">
+    <rect x="60" y="60" width="1080" height="510" rx="24"/>
+  </g>
+  <text x="600" y="250" text-anchor="middle" font-family="Georgia, serif" font-size="76" fill="#f3ead0" letter-spacing="18">BABYLON</text>
+  <text x="600" y="350" text-anchor="middle" font-family="Georgia, serif" font-size="120" fill="#c9a86a" letter-spacing="30">LIBRARY</text>
+  <text x="600" y="430" text-anchor="middle" font-family="monospace" font-size="26" fill="#8a8a96" letter-spacing="6">EVERY POSSIBLE TEXT · 6400 CHARACTERS</text>
+  <text x="600" y="500" text-anchor="middle" font-family="monospace" font-size="22" fill="#5c5c6a" letter-spacing="4">ADDRESS · INDEX · SEARCH · COMPARE</text>
+</svg>

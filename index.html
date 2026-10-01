@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      // Apply the saved theme before first paint to avoid any flash.
+      (function () {
+        try {
+          var stored = JSON.parse(localStorage.getItem('babel:settings:v1') || 'null');
+          var theme = (stored && stored.theme) || 'system';
+          if (theme === 'system') {
+            theme =
+              window.matchMedia &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches
+                ? 'dark'
+                : 'light';
+          }
+          document.documentElement.dataset.theme = theme;
+          document.documentElement.lang = (stored && stored.language) || 'en';
+        } catch (error) {
+          document.documentElement.dataset.theme = 'dark';
+          document.documentElement.lang = 'en';
+        }
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Вавилонская библиотека — Library of Babel</title>
+    <meta
+      name="description"
+      content="Математически адресуемая бесконечная библиотека: все возможные тексты длиной 6400 символов. Каждая страница детерминированно вычисляется из своего адреса."
+    />
+    <meta name="theme-color" content="#08080a" />
+    <meta name="color-scheme" content="dark light" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Вавилонская библиотека" />
+    <meta property="og:title" content="Вавилонская библиотека" />
+    <meta
+      property="og:description"
+      content="Бесконечная библиотека всех возможных текстов. Каждая страница — уникальный математический адрес."
+    />
+    <meta property="og:image" content="/og.svg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Вавилонская библиотека" />
+    <meta
+      name="twitter:description"
+      content="Бесконечная библиотека всех возможных текстов."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
