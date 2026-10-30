@@ -13,6 +13,7 @@
 
 import { fromDigits, pow, toDigits } from './bigint';
 import { findUnknownCharacters } from './alphabet';
+import { normalizeNewlines } from './text';
 import { pseudoDigitsFromIndex } from './pseudo';
 import { PAGE_LENGTH } from './constants';
 import type { GenerationMode } from './settings';
@@ -48,7 +49,8 @@ export function generatePageText(
 }
 
 /** text -> index (traditional positional decoding). */
-export function pageTextToIndex(text: string, alphabet: string[]): bigint {
+export function pageTextToIndex(rawText: string, alphabet: string[]): bigint {
+  const text = normalizeNewlines(rawText);
   const symbolIndex = new Map<string, number>();
   alphabet.forEach((c, i) => symbolIndex.set(c, i));
   const N = BigInt(alphabet.length);
@@ -70,7 +72,8 @@ export interface PageValidation {
   unknown: string[];
 }
 
-export function validatePage(text: string, alphabet: string[]): PageValidation {
+export function validatePage(rawText: string, alphabet: string[]): PageValidation {
+  const text = normalizeNewlines(rawText);
   const lengthOk = text.length === PAGE_LENGTH;
   const unknown = findUnknownCharacters(text, alphabet);
   return { valid: lengthOk && unknown.length === 0, lengthOk, alphabetOk: unknown.length === 0, unknown };

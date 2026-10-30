@@ -3,6 +3,7 @@ import { useLibrary } from '../state/LibraryContext';
 import { engine } from '../lib/engine';
 import { PAGE_LENGTH } from '../lib/page';
 import { describeMissingCharacters, GROUPS, type GroupId } from '../lib/alphabet';
+import { normalizeNewlines } from '../lib/text';
 import { encodeAddress, shortAddress } from '../lib/address';
 import type { FindResult } from '../lib/search';
 import { IconArrowLeft, IconArrowRight, IconSearch } from './icons';
@@ -155,7 +156,7 @@ export function LibrarySearch({ variant = 'inline' }: LibrarySearchProps) {
           placeholder={t('search.placeholder')}
           value={query}
           onChange={(event) => {
-            setQuery(event.target.value);
+            setQuery(normalizeNewlines(event.target.value));
             setResult(null);
           }}
           onKeyDown={(event) => {

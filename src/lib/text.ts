@@ -25,6 +25,15 @@ export interface SearchState {
 
 const WHITESPACE = /\s/;
 
+/**
+ * Normalise line endings to U+000A. Windows text uses CRLF ("\r\n"); the
+ * library alphabet has a single line-feed symbol, so CRLF must collapse to LF
+ * (and a lone CR, e.g. from old Mac files, must not survive as U+000D).
+ */
+export function normalizeNewlines(text: string): string {
+  return text.replace(/\r\n?/g, '\n');
+}
+
 export function isWhitespace(char: string): boolean {
   return WHITESPACE.test(char);
 }

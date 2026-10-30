@@ -8,6 +8,7 @@
  */
 
 import type { TranslationKey } from './i18n';
+import { normalizeNewlines } from './text';
 
 export type GroupId = 'ru' | 'en' | 'digits' | 'space' | 'punctuation' | 'special';
 
@@ -26,7 +27,10 @@ const RU_UPPER = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭ
 const EN_LOWER = 'abcdefghijklmnopqrstuvwxyz'.split('');
 const EN_UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 const DIGITS = '0123456789'.split('');
-const SPACE = [' '];
+// Space group: a plain space and the line feed U+000A. Newline is a first-class
+// symbol of the library so multi-line text can be pasted, searched and rendered
+// without treating "\n" as an unknown character.
+const SPACE = [' ', '\n'];
 const PUNCTUATION = ['.', ',', '!', '?', ';', ':', "'", '"', '«', '»', '(', ')', '[', ']', '{', '}', '—', '–', '…', '-'];
 const SPECIAL = ['@', '#', '$', '%', '^', '&', '*', '+', '=', '<', '>', '|', '/', '\\', '~', '`', '_'];
 
@@ -133,7 +137,8 @@ export function alphabetSignature(alphabet: string[]): string {
  * units) in order of first appearance. A Set is only used for membership,
  * never for iteration, so ordering is preserved.
  */
-export function findUnknownCharacters(text: string, alphabet: string[]): string[] {
+export function findUnknownCharacters(rawText: string, alphabet: string[]): string[] {
+  const text = normalizeNewlines(rawText);
   const known = new Set(alphabet);
   const missing: string[] = [];
   const seen = new Set<string>();

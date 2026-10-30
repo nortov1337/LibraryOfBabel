@@ -8,7 +8,7 @@ import {
   findUnknownCharacters,
   groupsForCharacter,
 } from '../alphabet';
-import { buildSegments, findAllMatches, toggleRange, wordRangeAt } from '../text';
+import { buildSegments, findAllMatches, normalizeNewlines, toggleRange, wordRangeAt } from '../text';
 
 describe('findUnknownCharacters', () => {
   it('returns unique characters in first-appearance order', () => {
@@ -81,6 +81,21 @@ describe('describeMissingCharacters', () => {
     expect(groupsForCharacter('a')).toContain('en');
     expect(groupsForCharacter('@')).toContain('special');
     expect(groupsForCharacter('😀')).toEqual([]);
+  });
+});
+
+describe('normalizeNewlines', () => {
+  it('collapses Windows CRLF to a single LF', () => {
+    expect(normalizeNewlines('a\r\nb')).toBe('a\nb');
+  });
+
+  it('converts a lone CR to LF', () => {
+    expect(normalizeNewlines('a\rb')).toBe('a\nb');
+  });
+
+  it('leaves LF and CR-free text untouched', () => {
+    expect(normalizeNewlines('a\nb')).toBe('a\nb');
+    expect(normalizeNewlines('ab')).toBe('ab');
   });
 });
 

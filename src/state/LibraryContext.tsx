@@ -20,7 +20,7 @@ import { randomBigIntLessThan } from '../lib/bigint';
 import { engine } from '../lib/engine';
 import { copyToClipboard } from '../lib/clipboard';
 import { buildBookPath } from '../lib/url';
-import { findAllMatches, type SearchState } from '../lib/text';
+import { findAllMatches, normalizeNewlines, type SearchState } from '../lib/text';
 import {
   createTranslator,
   formatDateTime,
@@ -299,10 +299,11 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
 
   const search = useMemo<SearchState | null>(() => {
     if (!urlQuery || text.length === 0) return null;
-    const matches = findAllMatches(text, urlQuery);
+    const query = normalizeNewlines(urlQuery);
+    const matches = findAllMatches(text, query);
     if (matches.length === 0) return null;
     return {
-      query: urlQuery,
+      query,
       matches,
       active: Math.min(activeMatch, matches.length - 1),
     };
@@ -372,7 +373,7 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
 
   const openLocation = useCallback(
     (target: bigint, position: number, query: string) => {
-      openPage(target, { position, query });
+      openPage(target, { position, query: normalizeNewlines(query) });
       setActiveMatch(0);
       setPanel(null);
     },

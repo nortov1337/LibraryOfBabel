@@ -26,6 +26,7 @@ import { fromDigits } from './bigint';
 import { PAGE_LENGTH } from './constants';
 import { pseudoIndexFromDigits } from './pseudo';
 import { findUnknownCharacters } from './alphabet';
+import { normalizeNewlines } from './text';
 import type { GenerationMode } from './settings';
 
 export type FindReason = 'empty' | 'too-long' | 'missing-chars';
@@ -92,10 +93,11 @@ function positionSlots(queryLength: number, seed: number, rng: () => number): nu
 }
 
 export function findText(
-  query: string,
+  rawQuery: string,
   alphabet: string[],
   mode: GenerationMode = 'traditional',
 ): FindResult {
+  const query = normalizeNewlines(rawQuery);
   const chars = Array.from(query);
   const K = chars.length;
   if (K === 0) return { ...EMPTY };
@@ -154,10 +156,11 @@ export function findText(
 
 /** Search a pasted text of arbitrary length (used by TEXT -> PAGE). */
 export function locateText(
-  text: string,
+  rawText: string,
   alphabet: string[],
   mode: GenerationMode = 'traditional',
 ): FindResult & { tooLong?: boolean } {
+  const text = normalizeNewlines(rawText);
   const chars = Array.from(text);
   if (chars.length > PAGE_LENGTH) {
     return {

@@ -1,256 +1,257 @@
 # Library of Babel
 
-Браузерная реализация **математически адресуемой библиотеки** — пространства всех возможных текстов фиксированной длины над настраиваемым алфавитом. Каждая страница содержит ровно **6400 символов**, а её содержимое детерминированно выводится из числового индекса страницы, закодированного в адрес URL. Страницы нигде не хранятся в базе данных: они вычисляются по требованию, и один и тот же адрес при одинаковом алфавите и режиме генерации всегда даёт ровно один и тот же текст.
+A browser-based implementation of a **mathematically addressable library** — the space of all possible texts of a fixed length over a configurable alphabet. Every page contains exactly **6400 characters**, and its content is deterministically derived from the numeric page index encoded in the URL address. Pages are never stored in a database: they are computed on demand, and the same address with the same alphabet and generation mode always yields exactly the same text.
 
-В проекте реализованы два независимых способа отображения одного и того же адресного пространства: **Traditional** (позиционный алгоритм, исходная реализация) и **Pseudo-Random** (детерминированный обратимый слой перемешивания на основе seed). Оба режима используют одно и то же число страниц (`N^6400`); отличается только преобразование индекса в символы.
+The project implements two independent ways of rendering the same address space: **Traditional** (a positional algorithm, the original implementation) and **Pseudo-Random** (a deterministic reversible shuffling layer based on a seed). Both modes use the same number of pages (`N^6400`); only the mapping from an index to characters differs.
 
-> О масштабе: при фиксированном алфавите и длине страницы библиотека конечна, но астрономически велика (`N^6400`). «Бесконечной» её можно называть лишь в разговорном смысле.
+> On scale: with a fixed alphabet and page length the library is finite, but astronomically large (`N^6400`). It can be called "infinite" only in a colloquial sense.
 
-## Возможности
+## Features
 
-- **Фиксированная длина страницы** — ровно `6400` символов.
-- **Адресация страниц** — страница определяется числовым индексом, закодированным в строку Base64URL.
-- **Два режима генерации** — `traditional` (позиционный base-N) и `pseudo` (детерминированное обратимое PRNG-перемешивание).
-- **Детерминированная генерация** — один адрес + один режим + один алфавит ⇒ одна и та же страница.
-- **Случайная страница** — выбирает равномерно случайный индекс через CSPRNG платформы (никогда не для содержимого).
-- **Previous / Next** — переход к соседнему индексу (с зацикливанием по пространству).
-- **Переход по адресу (Go To)** — открыть страницу по адресу или по десятичному индексу.
-- **Поиск текста (Find Text)** — математически конструирует страницу, содержащую запрос; без перебора страниц.
-- **Подсветка найденного текста** — совпадение физически выделяется внутри страницы, с навигацией `1 / N` между вхождениями (`Previous match` / `Next match`).
-- **Выделение слов по клику** — клик по токену подсвечивает его; повторный клик снимает выделение; поддерживается несколько выделений.
-- **Пользовательские алфавиты** — шесть групп символов (кириллица, латиница, цифры, пробел, пунктуация, спецсимволы), **цифры опциональны**; изменение групп пересчитывает всё пространство.
-- **Избранное (Bookmarks)** — локальное сохранение страниц с названием, датой, preview, кодом алфавита и режимом генерации; открытие, переименование, удаление, копирование адреса.
-- **Сравнение (Compare)** — загрузка двух страниц с независимыми адресами *и* режимами генерации; показывает число совпадающих/различающихся символов, процент совпадения и режим подсветки различий.
-- **Статистика библиотеки** — размер алфавита, длина страницы, `N^6400` и научное приближение, число цифр, текущий адрес/индекс и режим генерации.
-- **Text → Page** — вставить текст до 6400 символов и найти его в библиотеке.
-- **Поделиться (URL sharing)** — кнопка Share копирует URL, полностью восстанавливающий адрес, алфавит, режим отображения и режим генерации.
-- **Command Palette** — палитра команд с поиском (`Ctrl/Cmd + K`).
-- **Темы** — System, Dark, Light, Terminal, Minimal, построенные на CSS-токенах.
-- **Локализация** — английский (по умолчанию) и русский, включая locale-aware форматирование чисел/дат/процентов.
-- **Адаптивный интерфейс** — desktop, laptop, tablet и mobile.
-- **About the Library** — короткое объяснение концепции и её ограничения прямо в интерфейсе.
-- **Developer / Debug** — размер и код алфавита, длина страницы, индекс, кодированный/декодированный индекс, проверка обратимости и кнопка **Verify Page** с SHA-256 checksum.
-- **Прочие детали UX** — skeleton при загрузке, toast-уведомления, подтверждение копирования, страница 404, error boundary, сохранение настроек, восстановление последней сессии, метаданные Open Graph / Twitter и favicon.
+- **Fixed page length** — exactly `6400` characters.
+- **Page addressing** — a page is identified by a numeric index encoded as a Base64URL string.
+- **Two generation modes** — `traditional` (positional base-N) and `pseudo` (deterministic reversible PRNG shuffling).
+- **Deterministic generation** — one address + one mode + one alphabet ⇒ the same page.
+- **Random page** — picks a uniformly random index via the platform's CSPRNG (never for content).
+- **Previous / Next** — move to the adjacent index (wrapping around the space).
+- **Go To** — open a page by address or by decimal index.
+- **Find Text** — mathematically constructs a page containing the query; no page enumeration.
+- **Match highlighting** — the match is physically highlighted inside the page, with `1 / N` navigation between occurrences (`Previous match` / `Next match`).
+- **Click-to-select words** — clicking a token highlights it; clicking again removes the highlight; multiple selections are supported.
+- **Custom alphabets** — six character groups (Cyrillic, Latin, digits, space and line feed, punctuation, special characters), with **digits optional**; changing groups recomputes the entire space.
+- **Multiline text** — `U+000A` (LF) is a first-class alphabet character, so multiline text can be pasted as a whole; line breaks are preserved, and `\r\n` (Windows) is normalized to `\n`.
+- **Bookmarks** — locally saved pages with title, date, preview, alphabet code, and generation mode; open, rename, delete, copy address.
+- **Compare** — load two pages with independent addresses *and* generation modes; shows the number of matching/differing characters, the match percentage, and a difference-highlighting mode.
+- **Library statistics** — alphabet size, page length, `N^6400` and its scientific approximation, digit count, current address/index, and generation mode.
+- **Text → Page** — paste up to 6400 characters and find them in the library.
+- **URL sharing** — the Share button copies a URL that fully restores the address, alphabet, display mode, and generation mode.
+- **Command Palette** — a searchable command palette (`Ctrl/Cmd + K`).
+- **Themes** — System, Dark, Light, Terminal, Minimal, built on CSS tokens.
+- **Localization** — English (default) and Russian, including locale-aware formatting of numbers/dates/percentages.
+- **Responsive interface** — desktop, laptop, tablet, and mobile.
+- **About the Library** — a short explanation of the concept and its limits right in the UI.
+- **Developer / Debug** — alphabet size and code, page length, index, encoded/decoded index, a reversibility check, and a **Verify Page** button with a SHA-256 checksum.
+- **Other UX details** — loading skeletons, toast notifications, copy confirmation, a 404 page, an error boundary, settings persistence, last-session restore, Open Graph / Twitter metadata, and a favicon.
 
-## Генерация
+## Generation
 
-Любая страница вычисляется из трёх входных данных:
+Any page is computed from three inputs:
 
 ```
 text = generate(index, alphabet, mode)
 ```
 
-где `index ∈ [0, N^L)`, `N = alphabet.length`, `L = PAGE_LENGTH = 6400`, а `mode ∈ {traditional, pseudo}`. Генерация никогда не использует `Math.random()`; случайность (CSPRNG платформы) применяется только для *выбора* индекса на случайной странице.
+where `index ∈ [0, N^L)`, `N = alphabet.length`, `L = PAGE_LENGTH = 6400`, and `mode ∈ {traditional, pseudo}`. Generation never uses `Math.random()`; randomness (the platform's CSPRNG) is used only to *pick* the index for a random page.
 
 ### Traditional
 
-Traditional — это исходный позиционный алгоритм. Индекс страницы записывается в системе счисления с основанием `N` ровно из `L` big-endian цифр, и каждая цифра выбирает символ алфавита:
+Traditional is the original positional algorithm. The page index is written in base `N` as exactly `L` big-endian digits, and each digit selects an alphabet character:
 
 ```text
-digits = baseN(index, N, L)          // длина L, от старшей цифры к младшей
+digits = baseN(index, N, L)          // length L, most significant digit first
 text   = alphabet[digits[0]] + ... + alphabet[digits[L-1]]
 ```
 
-Свойства:
+Properties:
 
-- Это биекция между `[0, N^L)` и множеством всех текстов длины `L` над алфавитом.
-- `text → index` — обратное преобразование (схема Горнера), используется в `pageTextToIndex`.
-- Полностью стабилен и обратно совместим: существующие адреса, избранное и общие ссылки продолжают работать.
+- It is a bijection between `[0, N^L)` and the set of all texts of length `L` over the alphabet.
+- `text → index` is the inverse transformation (Horner's method), used in `pageTextToIndex`.
+- Fully stable and backward compatible: existing addresses, bookmarks, and shared links keep working.
 
 ### Pseudo-Random
 
-Режим Pseudo-Random сохраняет **то же адресное/индексное пространство**, но применяет к вектору цифр детерминированную обратимую перестановку `T` перед отображением цифр в символы:
+Pseudo-Random mode keeps the **same address/index space** but applies a deterministic reversible permutation `T` to the digit vector before mapping digits to characters:
 
 ```text
 digits = baseN(index, N, L)
-mixed  = T(digits)                   // обратимая перестановка (Z_N)^L
+mixed  = T(digits)                   // reversible permutation of (Z_N)^L
 text   = alphabet[mixed]
 ```
 
-`T` — это **4-раундовая сеть Фейстеля** над `(Z_N)^L`. Каждый раунд делит блок на две половины `(A, B)` и вычисляет:
+`T` is a **4-round Feistel network** over `(Z_N)^L`. Each round splits the block into two halves `(A, B)` and computes:
 
 ```text
-(A, B) -> ( B, (A + F(B)) mod N )    // поэлементно, mod N
+(A, B) -> ( B, (A + F(B)) mod N )    // element-wise, mod N
 ```
 
-`F` — это seeded PRNG («смеситель seed»), seed которого хэшируется из всей половины блока, поэтому изменение в любом месте `B` меняет весь `F(B)`. Сеть Фейстеля обратима при *любой* round-функции, что даёт два важных свойства:
+`F` is a seeded PRNG ("seed mixer") whose seed is hashed from the whole half-block, so a change anywhere in `B` changes all of `F(B)`. A Feistel network is invertible for *any* round function, which gives two important properties:
 
-1. **Лавина** — соседние индексы дают независимо выглядящие страницы; они не совпадают почти целиком.
-2. **Конструируемость** — чтобы страница содержала фразу, сначала строятся желаемые выходные цифры, а затем применяется `T⁻¹`. Прямая генерация воспроизводит ровно эту страницу, поэтому фраза гарантированно присутствует.
+1. **Avalanche** — adjacent indices produce independently looking pages; they are almost nothing alike.
+2. **Constructibility** — to make a page contain a phrase, the desired output digits are built first, then `T⁻¹` is applied. Direct generation reproduces exactly that page, so the phrase is guaranteed to be present.
 
-Ключевая гарантия:
+The key guarantee:
 
 ```
-один адрес + один режим + один алфавит = одна и та же страница
+one address + one mode + one alphabet = the same page
 ```
 
-Число страниц не меняется (`N^L`); режим влияет только на отображение страницы, но не на размер пространства.
+The number of pages does not change (`N^L`); the mode only affects how a page is rendered, not the size of the space.
 
-## Адресация
+## Addressing
 
-Адрес — это URL-safe Base64 (Base64URL, без padding) от **минимального big-endian байтового представления** индекса страницы:
+An address is URL-safe Base64 (Base64URL, no padding) of the **minimal big-endian byte representation** of the page index:
 
 ```text
 address = base64url( minimalBigEndianBytes(index) )
 index   = bigint( base64urlDecode(address) )
 ```
 
-Это биекция, поэтому выполняются равенства:
+This is a bijection, so the following equalities hold:
 
 ```text
 decodeAddress(encodeAddress(i)) === i
-encodeAddress(decodeAddress(a)) === a     // каноническая форма
+encodeAddress(decodeAddress(a)) === a     // canonical form
 ```
 
-Концептуальный конвейер:
+Conceptual pipeline:
 
 ```text
 Address -> Page Index -> Generation (digits + mode) -> 6400 characters
 ```
 
-Замечания по реализации:
+Implementation notes:
 
-- Арифметика использует **`BigInt`**, потому что индекс может достигать `N^6400`.
-- Преобразование систем счисления — `toDigits` / `fromDigits` (`src/lib/bigint.ts`).
-- Base64URL реализован вручную (`bytesToBase64Url` / `base64UrlToBytes`) и сохраняет символы `-` и `_`.
-- Адреса **длинные по своей природе**: страница несёт `L · log2(N)` бит информации, и адрес обязан нести столько же. Он компактен относительно hex-дампа, но это не короткий хэш — такова информационно-теоретическая цена точной перечислимости (об этом же сказано в панели About в приложении).
+- Arithmetic uses **`BigInt`**, because an index can reach `N^6400`.
+- Radix conversion is `toDigits` / `fromDigits` (`src/lib/bigint.ts`).
+- Base64URL is implemented by hand (`bytesToBase64Url` / `base64UrlToBytes`) and preserves the `-` and `_` characters.
+- Addresses are **long by nature**: a page carries `L · log2(N)` bits of information, and the address must carry just as many. It is compact relative to a hex dump, but it is not a short hash — that is the information-theoretic price of exact enumerability (the About panel in the app says the same thing).
 
-## Поиск
+## Search
 
-Поиск математический, а не перебор страниц. Для запроса длины `K`:
+Search is mathematical rather than an enumeration of pages. For a query of length `K`:
 
-1. Проверка запроса (`K ≤ 6400`, все символы есть в алфавите).
-2. Детерминированные позиции выводятся из хэша запроса.
-3. Страница заполняется детерминированным псевдослучайным заполнителем.
-4. В эти позиции записывается запрос.
-5. Выводится индекс страницы.
+1. Validate the query (`K ≤ 6400`, all characters present in the alphabet).
+2. Deterministic positions are derived from a hash of the query.
+3. The page is filled with a deterministic pseudo-random filler.
+4. The query is written into those positions.
+5. The page index is output.
 
-Один и тот же запрос, алфавит и режим всегда дают одну и ту же страницу и позиции. Несколько вхождений (до `2–5`, в зависимости от запроса) размещаются детерминированно; интерфейс подсвечивает все вхождения и позволяет переключаться между ними.
+The same query, alphabet, and mode always yield the same page and positions. Multiple occurrences (up to `2–5`, depending on the query) are placed deterministically; the UI highlights all occurrences and lets you switch between them.
 
-Режимы различаются способом получения индекса (а Pseudo-Random использует ещё и отдельный поток заполнителя, поэтому его каноническая страница отличается от Traditional):
+The modes differ in how the index is obtained (and Pseudo-Random also uses a separate filler stream, which is why its canonical page differs from Traditional):
 
 ```text
 traditional: index = fromDigits(desiredDigits)
 pseudo:      index = fromDigits(inverseFeistel(desiredDigits))
 ```
 
-В режиме Pseudo-Random построенная страница всё равно воспроизводится прямой генерацией, поэтому запрос гарантированно присутствует.
+In Pseudo-Random mode the constructed page is still reproduced by direct generation, so the query is guaranteed to be present.
 
-Реализация: `src/lib/search.ts`, отображение и подсветка — `src/components/LibrarySearch.tsx` и `src/components/BookView.tsx`.
+Implementation: `src/lib/search.ts`; rendering and highlighting — `src/components/LibrarySearch.tsx` and `src/components/BookView.tsx`.
 
-Ограничения:
+Limitations:
 
-- Длина запроса — не более 6400 символов.
-- Каждый символ запроса должен присутствовать в текущем алфавите. Если чего-то нет, интерфейс показывает список уникальных отсутствующих символов (с Unicode code point), объясняет причину и предлагает включить группы, которые их содержат. Символы, не входящие ни в одну встроенную группу, добавить из приложения нельзя.
-- Символы сравниваются точно; нет приведения регистра и нормализации.
+- Query length is at most 6400 characters.
+- Every query character must be present in the current alphabet. If something is missing, the UI shows a list of unique missing characters (with Unicode code points), explains the reason, and offers to enable the groups that contain them. Characters that do not belong to any built-in group cannot be added from the app.
+- Characters are compared exactly; there is no case folding. The only normalization is line endings: `\r\n` and a lone `\r` become `\n`, which belongs to the `space` group.
 
-## Формат URL
+## URL format
 
-Маршруты определены в `src/App.tsx`:
+Routes are defined in `src/App.tsx`:
 
 ```text
-/                     -> восстановить последнюю сессию или открыть случайную страницу
-/book/:address        -> просмотр страницы
+/                     -> restore the last session or open a random page
+/book/:address        -> view a page
 *                     -> 404
 ```
 
-URL страницы выглядит так:
+A page URL looks like this:
 
 ```text
 /book/<address>?a=<alphabetCode>&m=<displayMode>&g=<generationMode>[&p=<position>&q=<query>]
 ```
 
-Реальные примеры (индекс `0` с алфавитом по умолчанию, код которого `19`):
+Real examples (index `0` with the default alphabet, whose code is `19`):
 
 ```text
 /book/AA?a=19&m=book&g=traditional
 /book/AA?a=19&m=book&g=pseudo
 ```
 
-Параметры запроса (`src/lib/url.ts`):
+Query parameters (`src/lib/url.ts`):
 
-| Параметр | Значение                   | Допустимые значения                          |
-| -------- | -------------------------- | -------------------------------------------- |
-| `a`      | Конфигурация алфавита      | Hex-битмаска включённых групп, напр. `19`     |
-| `m`      | Режим отображения страницы | `book` \| `terminal` \| `minimal`            |
-| `g`      | Режим генерации            | `traditional` \| `pseudo`                    |
-| `p`      | Позиция подсветки          | Целочисленное смещение символа (из поиска)   |
-| `q`      | Запрос подсветки           | Искомый текст (из поиска)                    |
+| Parameter | Meaning                     | Allowed values                               |
+| --------- | --------------------------- | -------------------------------------------- |
+| `a`       | Alphabet configuration      | Hex bitmask of enabled groups, e.g. `19`     |
+| `m`       | Page display mode           | `book` \| `terminal` \| `minimal`            |
+| `g`       | Generation mode             | `traditional` \| `pseudo`                    |
+| `p`       | Highlight position          | Integer character offset (from search)       |
+| `q`       | Highlight query             | The searched text (from search)              |
 
-- **Адрес** находится в пути (`:address`) и закодирован как Base64URL.
-- **Режим генерации** всегда записывается как `g`, когда приложение формирует URL (навигация и Share), поэтому общая ссылка однозначно восстанавливает режим. Приоритет: `URL g → сохранённая настройка → значение по умолчанию (traditional)`.
-- **Конфигурация алфавита** — компактная hex-битмаска (`encodeAlphabet` / `decodeAlphabet`). Порядок групп и значения битов:
+- The **address** lives in the path (`:address`) and is encoded as Base64URL.
+- The **generation mode** is always written as `g` whenever the app builds a URL (navigation and Share), so a shared link unambiguously restores the mode. Priority: `URL g → saved setting → default (traditional)`.
+- The **alphabet configuration** is a compact hex bitmask (`encodeAlphabet` / `decodeAlphabet`). Group order and bit values:
 
-  | Группа           | ID            | Бит  | По умолчанию |
-  | ---------------- | ------------- | ---- | ------------ |
-  | Кириллица        | `ru`          | 0x01 | вкл.         |
-  | Латиница         | `en`          | 0x02 | выкл.        |
-  | Цифры            | `digits`      | 0x04 | выкл.        |
-  | Пробел           | `space`       | 0x08 | вкл.         |
-  | Пунктуация       | `punctuation` | 0x10 | вкл.         |
-  | Спецсимволы      | `special`     | 0x20 | выкл.        |
+  | Group            | ID            | Bit  | Default |
+  | ---------------- | ------------- | ---- | ------- |
+  | Cyrillic         | `ru`          | 0x01 | on      |
+  | Latin            | `en`          | 0x02 | off     |
+  | Digits           | `digits`      | 0x04 | off     |
+  | Space and LF     | `space`       | 0x08 | on      |
+  | Punctuation      | `punctuation` | 0x10 | on      |
+  | Special          | `special`     | 0x20 | off     |
 
-  Код по умолчанию: `0x01 | 0x08 | 0x10 = 0x19`, что даёт `N = 87`.
+  Default code: `0x01 | 0x08 | 0x10 = 0x19`, which gives `N = 88` (the `space` group contains the space `U+0020` and the line feed `U+000A`).
 
-- **Длинные адреса** поддерживаются без обрезки в URL; сокращается только отображение на экране (подсказка при наведении, переключатель раскрытия и кнопка Copy Address). Регрессионная фикстура с реальным адресом длиной ~6 500 символов лежит в `src/lib/__tests__/fixtures.ts`.
-- **После F5 / прямого перехода** приложение заново читает путь и параметры, генерирует страницу из адреса и восстанавливает алфавит, режим отображения и режим генерации. Отсутствующие параметры берутся из сохранённых настроек и значений по умолчанию.
+- **Long addresses** are supported in URLs without truncation; only the on-screen display is shortened (hover tooltip, expand toggle, and a Copy Address button). A regression fixture with a real address about 6,500 characters long lives in `src/lib/__tests__/fixtures.ts`.
+- **After F5 / direct navigation** the app re-reads the path and parameters, generates the page from the address, and restores the alphabet, display mode, and generation mode. Missing parameters fall back to saved settings and defaults.
 
-## Темы
+## Themes
 
-Доступные темы (`Settings → Тема`): `system`, `dark`, `light`, `terminal`, `minimal`.
+Available themes (`Settings → Theme`): `system`, `dark`, `light`, `terminal`, `minimal`.
 
-- Тема хранится в `localStorage` и применяется до первой отрисовки небольшим inline-скриптом в `index.html`, чтобы не было вспышки.
-- `system` следует за `prefers-color-scheme` и реагирует на изменения.
-- Все цвета берутся из единого набора **CSS design-токенов**, определённых для каждой темы в `src/index.css` (`:root` / `[data-theme='dark'|'light'|'terminal'|'minimal']`). Компоненты используют Tailwind-утилиты, привязанные к этим переменным (`theme.extend.colors.app.*` в `tailwind.config.js`); литеральные чёрный/белый встречаются только на фиксированных поверхностях страницы «бумага»/«терминал» — намеренно.
-- Поверхность страницы следует производному режиму отображения (`book`, `terminal`, `minimal`).
+- The theme is stored in `localStorage` and applied before the first paint by a small inline script in `index.html`, so there is no flash.
+- `system` follows `prefers-color-scheme` and reacts to changes.
+- All colors come from a single set of **CSS design tokens** defined per theme in `src/index.css` (`:root` / `[data-theme='dark'|'light'|'terminal'|'minimal']`). Components use Tailwind utilities bound to these variables (`theme.extend.colors.app.*` in `tailwind.config.js`); literal black/white appears only on the fixed "paper"/"terminal" page surfaces — deliberately.
+- The page surface follows the derived display mode (`book`, `terminal`, `minimal`).
 
-## Локализация
+## Localization
 
-Языки: **английский (по умолчанию)** и **русский**.
+Languages: **English (default)** and **Russian**.
 
-- Словари и транслятор — в `src/lib/i18n.ts`; `en` — канонический словарь, а `ru` обязан покрывать ровно те же ключи (это гарантируется типом `Record<TranslationKey, string>`).
-- Компоненты вызывают `t(key, params)`; пользовательские строки не захардкожены.
-- Locale-aware форматирование использует `Intl.NumberFormat` / `Intl.DateTimeFormat` (например, `6,400` против `6 400`) в соответствии с активным языком.
-- Язык хранится в настройках и отражается в `<html lang>`.
+- Dictionaries and the translator live in `src/lib/i18n.ts`; `en` is the canonical dictionary, and `ru` must cover exactly the same keys (enforced by the `Record<TranslationKey, string>` type).
+- Components call `t(key, params)`; user-facing strings are not hardcoded.
+- Locale-aware formatting uses `Intl.NumberFormat` / `Intl.DateTimeFormat` (for example, `6,400` vs `6 400`) according to the active language.
+- The language is stored in settings and reflected in `<html lang>`.
 
-## Горячие клавиши
+## Keyboard shortcuts
 
-| Сочетание            | Действие                                                    |
-| -------------------- | ----------------------------------------------------------- |
-| `Ctrl + K` / `Cmd+K` | Открыть / закрыть Command Palette                           |
-| `Ctrl + S` / `Cmd+S` | Сохранить текущую страницу в избранное                      |
-| `Ctrl + C` / `Cmd+C` | Скопировать текст страницы (только если ничего не выделено) |
-| `/`                  | Перевести фокус в поле поиска                               |
-| `R`                  | Случайная страница                                          |
-| `←`                  | Предыдущая страница                                         |
-| `→`                  | Следующая страница                                          |
+| Shortcut             | Action                                                       |
+| -------------------- | ------------------------------------------------------------ |
+| `Ctrl + K` / `Cmd+K` | Open / close the Command Palette                             |
+| `Ctrl + S` / `Cmd+S` | Save the current page to bookmarks                           |
+| `Ctrl + C` / `Cmd+C` | Copy the page text (only when nothing is selected)           |
+| `/`                  | Move focus to the search field                               |
+| `R`                  | Random page                                                  |
+| `←`                  | Previous page                                                |
+| `→`                  | Next page                                                    |
 
-Сочетания не срабатывают при вводе в полях `input`, `textarea` и редактируемых элементах (`Ctrl/Cmd + K` работает глобально). Реализация: `src/hooks/useHotkeys.ts`.
+Shortcuts do not fire while typing in `input`, `textarea`, or editable elements (`Ctrl/Cmd + K` works globally). Implementation: `src/hooks/useHotkeys.ts`.
 
-## Архитектура
+## Architecture
 
 ```text
 LibraryOfBabel/
-├── index.html                     # HTML-оболочка, bootstrap темы/языка, SEO/OG meta
+├── index.html                     # HTML shell, theme/language bootstrap, SEO/OG meta
 ├── package.json
-├── vite.config.ts                 # конфиг Vite + Vitest (ESM-формат worker)
+├── vite.config.ts                 # Vite + Vitest config (ESM worker format)
 ├── tsconfig.json
-├── tailwind.config.js             # Tailwind + палитра дизайн-токенов `app`
+├── tailwind.config.js             # Tailwind + `app` design-token palette
 ├── postcss.config.js
 ├── public/
 │   ├── favicon.svg
 │   └── og.svg
 └── src/
-    ├── main.tsx                   # точка входа React
-    ├── App.tsx                    # роутер + провайдеры + error boundary
-    ├── index.css                  # токены тем, классы компонентов, поверхности страниц
+    ├── main.tsx                   # React entry point
+    ├── App.tsx                    # router + providers + error boundary
+    ├── index.css                  # theme tokens, component classes, page surfaces
     ├── components/
-    │   ├── Shell.tsx              # шапка, навигация, layout, монтирование панелей
-    │   ├── BookView.tsx           # основная страница: адрес, навигация, поверхность, выделение слов
-    │   ├── LibrarySearch.tsx      # inline/panel поиск + состояние отсутствующих символов
+    │   ├── Shell.tsx              # header, navigation, layout, panel mounting
+    │   ├── BookView.tsx           # main page: address, navigation, surface, word selection
+    │   ├── LibrarySearch.tsx      # inline/panel search + missing-character state
     │   ├── GenerationModeToggle.tsx
     │   ├── CommandPalette.tsx
-    │   ├── Modal.tsx              # SlideOver + центрированный Modal
+    │   ├── Modal.tsx              # SlideOver + centered Modal
     │   ├── Toasts.tsx
     │   ├── Skeleton.tsx
     │   ├── ErrorBoundary.tsx
@@ -265,62 +266,62 @@ LibraryOfBabel/
     │       └── AboutModal.tsx
     ├── hooks/
     │   └── useHotkeys.ts
-    ├── lib/                       # независимое от UI, покрытое unit-тестами ядро
+    ├── lib/                       # UI-independent, unit-tested core
     │   ├── constants.ts           # PAGE_LENGTH = 6400
-    │   ├── bigint.ts              # pow, BigInt <-> digits, Base64URL, CSPRNG-индекс
-    │   ├── alphabet.ts            # группы, buildAlphabet, битмаск-кодек, отсутствующие символы
-    │   ├── address.ts             # encode/decode адреса (биекция), shortAddress
+    │   ├── bigint.ts              # pow, BigInt <-> digits, Base64URL, CSPRNG index
+    │   ├── alphabet.ts            # groups, buildAlphabet, bitmask codec, missing characters
+    │   ├── address.ts             # address encode/decode (bijection), shortAddress
     │   ├── page.ts                # generatePageText, pageTextToIndex, verifyPage
-    │   ├── pseudo.ts              # перемешивание Фейстеля (forward/inverse)
-    │   ├── search.ts              # математический findText
-    │   ├── compare.ts             # сравнение страниц
-    │   ├── text.ts                # совпадения, выбор слова, сегменты подсветки
-    │   ├── settings.ts            # настройки + сохранение последней сессии
-    │   ├── bookmarks.ts           # избранное в localStorage
-    │   ├── url.ts                 # сборка/разбор URL-состояния
-    │   ├── i18n.ts                # словари en/ru + Intl-форматтеры
-    │   ├── format.ts              # числовые помощники (научная нотация, разряды)
-    │   ├── clipboard.ts           # буфер обмена с fallback
-    │   ├── engine.ts              # клиент worker'а с синхронным fallback
+    │   ├── pseudo.ts              # Feistel shuffling (forward/inverse)
+    │   ├── search.ts              # mathematical findText
+    │   ├── compare.ts             # page comparison
+    │   ├── text.ts                # matches, word selection, highlight segments
+    │   ├── settings.ts            # settings + last-session persistence
+    │   ├── bookmarks.ts           # bookmarks in localStorage
+    │   ├── url.ts                 # build/parse URL state
+    │   ├── i18n.ts                # en/ru dictionaries + Intl formatters
+    │   ├── format.ts              # numeric helpers (scientific notation, grouping)
+    │   ├── clipboard.ts           # clipboard with fallback
+    │   ├── engine.ts              # worker client with synchronous fallback
     │   └── __tests__/
     │       ├── core.test.ts
     │       ├── pseudo.test.ts
     │       ├── text.test.ts
-    │       └── fixtures.ts        # фикстура длинного реального адреса
+    │       └── fixtures.ts        # fixture with a long real address
     ├── pages/
-    │   ├── HomeRedirect.tsx       # `/` -> последняя сессия или случайная страница
+    │   ├── HomeRedirect.tsx       # `/` -> last session or random page
     │   ├── LibraryPage.tsx
     │   └── NotFound.tsx
     ├── state/
-    │   ├── LibraryContext.tsx     # центральное состояние (страница, поиск, настройки, i18n)
+    │   ├── LibraryContext.tsx     # central state (page, search, settings, i18n)
     │   └── ToastContext.tsx
     └── workers/
-        └── library.worker.ts      # генерация/поиск вне main thread
+        └── library.worker.ts      # generation/search off the main thread
 ```
 
-Ключевые моменты:
+Key points:
 
-- Ядро `src/lib` чистое и не зависит от React, поэтому тестируется напрямую.
-- `LibraryContext` — единственный источник истины для текущей страницы, состояния поиска, настроек и локализации; эффективное состояние выводится из URL (путь адреса + параметры запроса).
-- Тяжёлая работа с BigInt выполняется в module **Web Worker** (`src/workers/library.worker.ts`) через `engine`; если Worker недоступен, используется тот же синхронный код, поэтому поведение идентично.
+- The `src/lib` core is pure and independent of React, so it is tested directly.
+- `LibraryContext` is the single source of truth for the current page, search state, settings, and localization; the effective state is derived from the URL (address path + query parameters).
+- Heavy BigInt work runs in a **Web Worker** module (`src/workers/library.worker.ts`) via `engine`; if the Worker is unavailable, the same synchronous code is used, so behavior is identical.
 
-## Технологии
+## Tech stack
 
-| Область        | Выбор                                                         |
-| -------------- | ------------------------------------------------------------- |
-| Framework      | React `^18.3.1`                                               |
-| Язык           | TypeScript `^5.5.4`                                           |
-| Сборка         | Vite `^5.4.3` (`@vitejs/plugin-react ^4.3.1`)                 |
-| Стили          | Tailwind CSS `^3.4.10` + CSS-переменные (дизайн-токены)       |
-| Роутинг        | react-router-dom `^6.26.2` (BrowserRouter)                    |
-| Состояние      | React Context (`LibraryContext`, `ToastContext`)              |
-| Workers        | module worker формат Vite (`worker.format: 'es'`)             |
-| Тесты          | Vitest `^2.0.5`, `@testing-library/react ^16.3.3`, jsdom      |
-| База данных    | Нет — без бэкенда; страницы вычисляются, а не хранятся        |
+| Area          | Choice                                                        |
+| ------------- | ------------------------------------------------------------- |
+| Framework     | React `^18.3.1`                                               |
+| Language      | TypeScript `^5.5.4`                                           |
+| Build         | Vite `^5.4.3` (`@vitejs/plugin-react ^4.3.1`)                 |
+| Styling       | Tailwind CSS `^3.4.10` + CSS variables (design tokens)        |
+| Routing       | react-router-dom `^6.26.2` (BrowserRouter)                    |
+| State         | React Context (`LibraryContext`, `ToastContext`)              |
+| Workers       | Vite module worker format (`worker.format: 'es'`)             |
+| Tests         | Vitest `^2.0.5`, `@testing-library/react ^16.3.3`, jsdom      |
+| Database      | None — no backend; pages are computed, not stored             |
 
-## Разработка
+## Development
 
-Требуются Node.js и npm.
+Node.js and npm are required.
 
 ```bash
 git clone <repository-url>
@@ -329,76 +330,76 @@ npm install
 npm run dev
 ```
 
-Доступные скрипты (из `package.json`):
+Available scripts (from `package.json`):
 
-| Команда             | Описание                                                  |
+| Command             | Description                                               |
 | ------------------- | --------------------------------------------------------- |
-| `npm run dev`       | Запустить dev-сервер Vite                                  |
-| `npm run build`     | Проверка типов (`tsc --noEmit`) и production-сборка        |
-| `npm run preview`   | Локально отдать собранный `dist/`                          |
-| `npm run test`      | Запустить Vitest в watch-режиме                            |
-| `npm run test:run`  | Прогнать тесты один раз                                    |
-| `npm run typecheck` | Только проверка типов (`tsc --noEmit`)                     |
+| `npm run dev`       | Start the Vite dev server                                 |
+| `npm run build`     | Type-check (`tsc --noEmit`) and build for production      |
+| `npm run preview`   | Serve the built `dist/` locally                           |
+| `npm run test`      | Run Vitest in watch mode                                  |
+| `npm run test:run`  | Run the tests once                                        |
+| `npm run typecheck` | Type-check only (`tsc --noEmit`)                          |
 
-Отдельного lint-скрипта в проекте нет.
+There is no separate lint script in the project.
 
 ## Production
 
 ```bash
-npm run build     # результат в dist/
-npm run preview   # локально отдать production-сборку
+npm run build     # output in dist/
+npm run preview   # serve the production build locally
 ```
 
-`dist/` — это статический бандл, его можно разместить на любом статическом хостинге. Так как приложение использует `BrowserRouter`, хостинг должен быть настроен с **SPA fallback** — переписывать неизвестные пути (например, прямой переход на `/book/<address>`) на `index.html`. `vite preview` уже обеспечивает этот fallback.
+`dist/` is a static bundle that can be hosted on any static hosting. Because the app uses `BrowserRouter`, the host must be configured with an **SPA fallback** — rewriting unknown paths (for example, a direct visit to `/book/<address>`) to `index.html`. `vite preview` already provides this fallback.
 
-## Детерминированность
+## Determinism
 
-Детерминированность — центральное свойство проекта:
+Determinism is the central property of the project:
 
-> Один и тот же адрес при одинаковой конфигурации должен всегда приводить к одному и тому же результату.
+> The same address with the same configuration must always lead to the same result.
 
-Результат зависит ровно от трёх входных данных, и все они воспроизводимы:
+The result depends on exactly three inputs, and all of them are reproducible:
 
 ```text
 page = generate(index, alphabet, mode)
-  index    = decodeAddress(address)     // из пути URL
-  alphabet = buildAlphabet(groups)      // из кода `a` в URL / сохранённых настроек
-  mode     = traditional | pseudo       // из `g` в URL / сохранённых настроек
+  index    = decodeAddress(address)     // from the URL path
+  alphabet = buildAlphabet(groups)      // from the `a` code in the URL / saved settings
+  mode     = traditional | pseudo       // from `g` in the URL / saved settings
 ```
 
-Концептуальный пример:
+A conceptual example:
 
 ```text
 /book/AA?a=19&m=book&g=traditional
-  -> индекс 0, алфавит по умолчанию (N = 87), Traditional
-  -> всегда одна и та же страница из 6400 символов для любого пользователя
+  -> index 0, default alphabet (N = 88), Traditional
+  -> always the same 6400-character page for any user
 
 /book/AA?a=19&m=book&g=pseudo
-  -> индекс 0, алфавит по умолчанию (N = 87), Pseudo-Random
-  -> другая страница, но столь же стабильная для любого пользователя
+  -> index 0, default alphabet (N = 88), Pseudo-Random
+  -> a different page, but equally stable for any user
 ```
 
-Содержимое страниц не зависит от `Math.random()`, времени или состояния сессии. Действие `Verify Page` в панели Debug заново генерирует страницу из индекса и сравнивает результат (и показывает SHA-256 checksum).
+Page content does not depend on `Math.random()`, time, or session state. The `Verify Page` action in the Debug panel regenerates the page from the index and compares the result (and shows a SHA-256 checksum).
 
-## Философия дизайна
+## Design philosophy
 
-- **Страницы не хранятся.** Нет базы данных страниц и нет заранее вычисленного корпуса; вся библиотека представлена формулой, а не данными.
-- **Пространство адресуется математически.** Страница — это число в `[0, N^6400)`; Base64URL — лишь URL-совместимое кодирование этого числа. Навигация, sharing и поиск сводятся к арифметике.
-- **Генерация воспроизводима.** Зная адрес и конфигурацию, кто угодно вычислит ту же самую страницу. Именно это делает sharing осмысленным без сервера.
-- **Адрес — идентичность страницы.** Режим генерации является частью URL, поэтому один адрес можно однозначно открыть в любом из режимов, а скопированный адрес у другого пользователя отрисуется идентично.
+- **Pages are not stored.** There is no page database and no precomputed corpus; the whole library is represented by a formula, not by data.
+- **The space is addressed mathematically.** A page is a number in `[0, N^6400)`; Base64URL is merely the URL-compatible encoding of that number. Navigation, sharing, and search all reduce to arithmetic.
+- **Generation is reproducible.** Given the address and the configuration, anyone can compute the same page. That is exactly what makes sharing meaningful without a server.
+- **The address is the page's identity.** The generation mode is part of the URL, so a single address can be unambiguously opened in any of the modes, and a copied address renders identically for another user.
 
-## Ограничения
+## Limitations
 
-- **Адреса длинные.** Страница содержит `6400 · log2(N)` бит, поэтому адрес несёт столько же данных и может достигать тысяч символов. Сервиса коротких ссылок нет (нет бэкенда); очень длинные URL могут упираться в лимиты прокси/хостинга.
-- **Поиск ограничен алфавитом.** Запрос не длиннее 6400 символов, и каждый символ должен присутствовать в текущем алфавите. Отсутствующие символы показываются; символы, не входящие ни в одну встроенную группу, добавить из интерфейса нельзя.
-- **Pseudo-Random не криптографический.** Слой перемешивания — это детерминированная обратимая перестановка, предназначенная для визуального разнообразия, а не для безопасности.
-- **`Verify Page` (checksum) требует безопасного контекста.** SHA-256 checksum использует `crypto.subtle`, доступный только на HTTPS (или `localhost`). Без него действие проверки сообщает об ошибке.
-- **Хранение локальное.** Настройки, избранное и последняя сессия хранятся в `localStorage`; очистка данных сайта сбрасывает их, синхронизации между устройствами нет.
-- **Два языка.** Реализованы только английский и русский.
-- **Нужен SPA fallback.** Прямые ссылки зависят от того, что хостинг переписывает неизвестные маршруты на `index.html` (см. [Production](#production)).
-- **Нет кураторства.** Библиотека — математическая модель: она содержит все возможные тексты, но осмысленные строки не «собраны» — их находят детерминированно через Search. При случайном просмотре читаемый текст практически не встречается.
-- **Фиксированные встроенные группы алфавита.** Произвольные наборы символов сверх шести предопределённых групп не поддерживаются.
+- **Addresses are long.** A page contains `6400 · log2(N)` bits, so an address carries just as much data and can reach thousands of characters. There is no URL shortener (no backend); very long URLs may run into proxy/hosting limits.
+- **Search is bounded by the alphabet.** A query is at most 6400 characters long, and every character must be present in the current alphabet. Missing characters are shown; characters that do not belong to any built-in group cannot be added from the UI.
+- **Pseudo-Random is not cryptographic.** The shuffling layer is a deterministic reversible permutation intended for visual variety, not for security.
+- **`Verify Page` (checksum) requires a secure context.** The SHA-256 checksum uses `crypto.subtle`, which is available only over HTTPS (or `localhost`). Without it, the verify action reports an error.
+- **Storage is local.** Settings, bookmarks, and the last session are stored in `localStorage`; clearing site data resets them, and there is no cross-device sync.
+- **Two languages.** Only English and Russian are implemented.
+- **An SPA fallback is required.** Direct links depend on the host rewriting unknown routes to `index.html` (see [Production](#production)).
+- **No curation.** The library is a mathematical model: it contains all possible texts, but meaningful strings are not "collected" — they are found deterministically through Search. On random browsing, readable text practically never appears.
+- **Built-in alphabet groups are fixed.** Arbitrary character sets beyond the six predefined groups are not supported.
 
-## Лицензия
+## License
 
-Файла лицензии в репозитории на момент написания нет, поэтому лицензия пока **не определена**. Добавьте лицензию перед распространением или повторным использованием проекта.
+There is no license file in the repository as of this writing, so the license is currently **undefined**. Add a license before distributing or reusing the project.

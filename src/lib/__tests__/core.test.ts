@@ -4,6 +4,8 @@ import {
   countDigits,
   decodeAlphabet,
   encodeAlphabet,
+  findUnknownCharacters,
+  groupsForCharacter,
   GROUPS,
   type GroupId,
 } from '../alphabet';
@@ -205,6 +207,43 @@ describe('search', () => {
     const hit = findText('а'.repeat(PAGE_LENGTH + 1), alphabet);
     expect(hit.found).toBe(false);
     expect(hit.reason).toBe('too-long');
+  });
+});
+
+describe('newline support', () => {
+  it('treats U+000A as a normal alphabet symbol', () => {
+    expect(alphabet).toContain('\n');
+    expect(groupsForCharacter('\n')).toContain('space');
+    expect(findUnknownCharacters('первая\nвторая', alphabet)).toEqual([]);
+  });
+
+  it('finds multi-line queries and preserves the line breaks', () => {
+    const phrase = 'первая строка\nвторая строка';
+    const hit = findText(phrase, alphabet);
+    expect(hit.found).toBe(true);
+    const page = generatePageText(hit.index, alphabet);
+    for (const position of hit.positions) {
+      expect(page.slice(position, position + phrase.length)).toBe(phrase);
+    }
+  });
+
+  it('normalises CRLF to LF before validation and search', () => {
+    const crlf = 'первая строка\r\nвторая строка';
+    const lf = 'первая строка\nвторая строка';
+    expect(findUnknownCharacters(crlf, alphabet)).toEqual([]);
+    const a = findText(crlf, alphabet);
+    const b = findText(lf, alphabet);
+    expect(a.found).toBe(true);
+    expect(a.index).toBe(b.index);
+    expect(a.positions).toEqual(b.positions);
+    const page = generatePageText(a.index, alphabet);
+    expect(page.slice(a.position, a.position + lf.length)).toBe(lf);
+  });
+
+  it('round-trips text containing newlines through the index', () => {
+    const index = 123456789n;
+    const text = generatePageText(index, alphabet);
+    expect(pageTextToIndex(text, alphabet)).toBe(index);
   });
 });
 

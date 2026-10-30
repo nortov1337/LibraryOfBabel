@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useLibrary } from '../../state/LibraryContext';
 import { PAGE_LENGTH, pageSpaceSize } from '../../lib/page';
-import { countDigits } from '../../lib/alphabet';
+import { characterSymbol, countDigits } from '../../lib/alphabet';
 import { shortAddress } from '../../lib/address';
 import { SlideOver } from '../Modal';
 
@@ -95,7 +95,7 @@ export function StatsPanel() {
         <div className="rounded-xl border border-app-border bg-app-surface p-3.5">
           <p className="label">{t('stats.alphabet')}</p>
           <p className="mt-1.5 break-all font-mono text-xs leading-relaxed text-app-muted">
-            {alphabet.join('')}
+            {alphabet.map(characterSymbol).join('')}
           </p>
         </div>
       </div>
