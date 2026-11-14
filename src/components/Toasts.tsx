@@ -6,7 +6,7 @@ export function Toasts() {
   const { toasts, dismiss } = useToast();
   const { t } = useLibrary();
   return (
-    <div className="pointer-events-none fixed bottom-4 right-4 z-[100] flex w-[min(92vw,22rem)] flex-col gap-2">
+    <div className="pointer-events-none fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 z-[100] flex w-[min(92vw,22rem)] flex-col gap-2">
       {toasts.map((toast) => (
         <div
           key={toast.id}

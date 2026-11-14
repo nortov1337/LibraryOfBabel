@@ -87,7 +87,7 @@ export function BookmarksPanel() {
                 {bookmark.preview || '—'}
               </p>
 
-              <div className="mt-2 flex items-center justify-between gap-2">
+              <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <span className="text-[10px] text-app-faint">
                   {date(bookmark.createdAt)} · {t('bookmarks.alphabet', { code: bookmark.alphabetCode })} ·{' '}
                   {t('bookmarks.mode', {
@@ -97,7 +97,7 @@ export function BookmarksPanel() {
                         : t('generation.traditional'),
                   })}
                 </span>
-                <div className="flex items-center gap-0.5">
+                <div className="flex items-center justify-end gap-0.5">
                   <button
                     type="button"
                     className="btn btn-ghost h-8 w-8 !px-0"

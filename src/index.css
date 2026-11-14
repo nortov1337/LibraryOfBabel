@@ -416,6 +416,12 @@
   hyphens: auto;
 }
 
+@media (max-width: 639px) {
+  .page-book .page-text {
+    text-align: left;
+  }
+}
+
 .page-terminal {
   background: #05070a;
   color: #86e0a8;

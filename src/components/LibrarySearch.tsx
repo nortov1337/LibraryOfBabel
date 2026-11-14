@@ -152,7 +152,7 @@ export function LibrarySearch({ variant = 'inline' }: LibrarySearchProps) {
         <textarea
           ref={inputRef}
           rows={inline ? 1 : 4}
-          className={`input font-mono text-sm ${inline ? 'min-h-[44px] resize-none' : 'resize-y'}`}
+          className={`input font-mono text-sm ${inline ? 'min-h-[64px] resize-none min-[400px]:min-h-[44px]' : 'resize-y'}`}
           placeholder={t('search.placeholder')}
           value={query}
           onChange={(event) => {

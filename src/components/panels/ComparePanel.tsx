@@ -85,7 +85,7 @@ export function ComparePanel() {
     <Modal title={t('compare.title')} onClose={closePanel} maxWidth="max-w-6xl">
       <div className="space-y-4">
         <div className="grid gap-3 md:grid-cols-2">
-          <div className="rounded-xl border border-app-border bg-app-surface p-3">
+          <div className="min-w-0 rounded-xl border border-app-border bg-app-surface p-3">
             <p className="label">{t('compare.left')}</p>
             <div className="mt-2 flex gap-2">
               <input
@@ -117,13 +117,13 @@ export function ComparePanel() {
                 <IconDice width={15} height={15} />
               </button>
             </div>
-            <div className="mt-2 flex items-center gap-2">
+            <div className="mt-2 flex flex-wrap items-center gap-2">
               <span className="label">{t('compare.mode')}</span>
               <GenerationModeToggle value={leftMode} onChange={setLeftMode} />
             </div>
           </div>
 
-          <div className="rounded-xl border border-app-border bg-app-surface p-3">
+          <div className="min-w-0 rounded-xl border border-app-border bg-app-surface p-3">
             <p className="label">{t('compare.right')}</p>
             <div className="mt-2 flex gap-2">
               <input
@@ -155,7 +155,7 @@ export function ComparePanel() {
                 <IconDice width={15} height={15} />
               </button>
             </div>
-            <div className="mt-2 flex items-center gap-2">
+            <div className="mt-2 flex flex-wrap items-center gap-2">
               <span className="label">{t('compare.mode')}</span>
               <GenerationModeToggle value={rightMode} onChange={setRightMode} />
             </div>

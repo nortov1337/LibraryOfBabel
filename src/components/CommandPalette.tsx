@@ -215,7 +215,7 @@ export function CommandPalette() {
   });
 
   return (
-    <div className="fixed inset-0 z-[80] flex items-start justify-center px-4 pt-[12vh]">
+    <div className="fixed inset-0 z-[80] flex items-start justify-center px-3 pt-[8vh] sm:px-4 sm:pt-[12vh]">
       <button
         type="button"
         aria-label={t('common.close')}
@@ -223,7 +223,7 @@ export function CommandPalette() {
         onClick={close}
       />
       <div className="relative z-10 w-full max-w-xl overflow-hidden rounded-2xl border border-app-border bg-app-solid shadow-2xl backdrop-blur-2xl animate-scale-in">
-        <div className="flex items-center gap-3 border-b border-app-border px-4">
+        <div className="flex items-center gap-3 border-b border-app-border px-3 sm:px-4">
           <span className="text-app-faint">
             {goToMode ? <IconExternal width={16} height={16} /> : <IconSearch width={16} height={16} />}
           </span>
@@ -232,11 +232,11 @@ export function CommandPalette() {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder={goToMode ? t('palette.goToPlaceholder') : t('palette.placeholder')}
-            className="w-full bg-transparent py-4 text-sm text-app-text placeholder:text-app-faint focus:outline-none"
+            className="w-full min-w-0 bg-transparent py-4 text-sm text-app-text placeholder:text-app-faint focus:outline-none"
             spellCheck={false}
             autoComplete="off"
           />
-          <kbd className="chip !px-2 !py-0.5 font-mono text-[10px]">ESC</kbd>
+          <kbd className="chip hidden !px-2 !py-0.5 font-mono text-[10px] sm:inline-flex">ESC</kbd>
         </div>
 
         {!goToMode && (
@@ -253,18 +253,20 @@ export function CommandPalette() {
                   command.run();
                   if (command.id !== 'goto') close();
                 }}
-                className={`flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm transition ${
+                className={`flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm transition sm:px-4 ${
                   index === active
                     ? 'bg-app-surface-hover text-app-text'
                     : 'text-app-muted hover:bg-app-surface'
                 }`}
               >
-                <span className="text-app-accent">{command.icon}</span>
-                <span className="flex-1">{command.label}</span>
+                <span className="shrink-0 text-app-accent">{command.icon}</span>
+                <span className="min-w-0 flex-1">{command.label}</span>
                 {command.hint && (
-                  <kbd className="chip !px-2 !py-0.5 font-mono text-[10px]">{command.hint}</kbd>
+                  <kbd className="chip hidden !px-2 !py-0.5 font-mono text-[10px] sm:inline-flex">
+                    {command.hint}
+                  </kbd>
                 )}
-                <span className="w-24 text-right text-[10px] uppercase tracking-widest text-app-faint">
+                <span className="hidden w-24 text-right text-[10px] uppercase tracking-widest text-app-faint sm:block">
                   {command.group}
                 </span>
               </button>
@@ -291,11 +293,11 @@ export function CommandPalette() {
           </div>
         )}
 
-        <div className="flex items-center justify-between border-t border-app-border px-4 py-2 text-[10px] uppercase tracking-widest text-app-faint">
-          <span>{t('palette.footer')}</span>
+        <div className="flex items-center justify-between border-t border-app-border px-3 py-2 text-[10px] uppercase tracking-widest text-app-faint sm:px-4">
+          <span className="hidden sm:inline">{t('palette.footer')}</span>
           <button
             type="button"
-            className="hover:text-app-muted"
+            className="ml-auto hover:text-app-muted"
             onClick={() => {
               push('Ctrl+K');
               close();

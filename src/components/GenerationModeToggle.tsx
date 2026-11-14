@@ -35,7 +35,7 @@ export function GenerationModeToggle({ value, onChange, className = '' }: Props)
             title={option.tooltip}
             aria-pressed={active}
             onClick={() => onChange(option.id)}
-            className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
+            className={`whitespace-nowrap rounded-lg px-2 py-1.5 text-xs font-medium transition sm:px-3 ${
               active
                 ? 'bg-app-accent-soft text-app-accent shadow-sm'
                 : 'text-app-muted hover:bg-app-surface-hover hover:text-app-text'

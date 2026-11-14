@@ -139,10 +139,10 @@ function PageSurface() {
 
   const surfaceClass =
     mode === 'terminal'
-      ? 'page-surface page-terminal rounded-2xl border p-5 sm:p-8'
+      ? 'page-surface page-terminal rounded-2xl border p-4 sm:p-8'
       : mode === 'minimal'
         ? 'page-surface page-minimal px-1 py-2 sm:px-4'
-        : 'page-surface page-book rounded-2xl border border-black/10 p-6 sm:p-12';
+        : 'page-surface page-book rounded-2xl border border-black/10 p-5 sm:p-12';
 
   return (
     <article
